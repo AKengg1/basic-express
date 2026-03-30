@@ -12,13 +12,22 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  const start = Date.now();
+  req.start = Date.now();
 
   res.on("finish", () => {
-    console.log(`responded in ${Date.now() - start}ms`);
+    console.log(`responded in ${Date.now() - req.start}ms`);
   });
   next();
 });
+
+const middlewareDashboard = (req, res, next) => {
+  req.startDash = Date.now()  
+  res.on("finish", () => {
+    console.log(`Entered Dashboard in ${Date.now() - req.startDash}ms`)
+  })
+  next()
+}
+
 //handmade database
 
 let posts = [
@@ -38,7 +47,7 @@ app.get("/", (_, res) => {
   res.redirect("/dashboard");
 });
 
-app.get("/dashboard", (_, res) => {
+app.get("/dashboard", middlewareDashboard, (_, res) => {
   res.send("Welcome to server");
 });
 
