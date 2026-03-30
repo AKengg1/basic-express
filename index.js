@@ -35,6 +35,10 @@ let nextId = 4;
 
 //routes
 app.get("/", (_, res) => {
+  res.redirect("/dashboard");
+});
+
+app.get("/dashboard", (_, res) => {
   res.send("Welcome to server");
 });
 
