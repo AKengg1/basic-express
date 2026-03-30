@@ -38,6 +38,38 @@ app.get("/", (_, res) => {
   res.send("Welcome to server");
 });
 
+app.get("/posts", (req, res) => {
+  const author = req.query.author;
+  if (author) {
+    return res.json(posts.filter((e) => e.author === author));
+  }
+  res.json(posts);
+});
+
+app.get("/posts/:id", (req, res) => {
+  const post = posts.find((e) => e.id === Number(req.params.id));
+
+  if (!post) return res.status(404).json({ error: "Post not found" });
+  res.status(201).json(post);
+});
+
+app.post("/posts", (req, res) => {
+  const { title, author, body } = req.body;
+  if (!title || !author || !body)
+    return res.status(400).json({ error: "title, author, and body required" });
+
+  const post = { id: nextId++, title, author, body };
+  posts.push(post);
+  res.status(201).json(post);
+});
+
+app.delete("/posts/:id", (req, res) => {
+  const index = posts.findIndex((e) => e.id === Number(req.params.id));
+  if (index === -1) return res.status(404).json({ error: "post not found" });
+  const deleted = posts.splice(index, 1);
+  res.status(200).json({ deleted: deleted[0] });
+});
+
 app.listen(3000, () => {
   console.log("Server listening at http://localhost:3000");
 });
